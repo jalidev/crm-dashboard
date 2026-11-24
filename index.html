@@ -14,7 +14,7 @@
   .navlink{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;transition:.15s;border:none;background:none;cursor:pointer;text-align:left;width:100%}
   .navlink:hover{color:var(--txt);background:var(--panel2)}
   .navlink.active{background:rgba(200,245,66,.1);color:var(--lime)}
-  .navlink .ico{width:20px;text-align:center}
+  .navlink .ico{width:20px;text-align:center;display:flex}.navlink .ico svg{width:18px;height:18px}
   main{flex:1;padding:26px 30px;min-width:0}
   .topbar{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
   .topbar h1{font-size:24px;letter-spacing:-.8px}
@@ -63,16 +63,16 @@
 <body>
 <aside id="side">
   <div class="logo">PULSE<span>.</span></div>
-  <button class="navlink active"><span class="ico">▦</span>Overview</button>
-  <button class="navlink"><span class="ico">👥</span>Contacts</button>
-  <button class="navlink"><span class="ico">💼</span>Deals</button>
-  <button class="navlink"><span class="ico">✉️</span>Campaigns</button>
-  <button class="navlink"><span class="ico">📊</span>Reports</button>
-  <button class="navlink"><span class="ico">⚙️</span>Settings</button>
+  <button class="navlink active"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>Overview</button>
+  <button class="navlink"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 19.5c0-3.2 2.5-5.5 5.5-5.5s5.5 2.3 5.5 5.5"/><circle cx="16.8" cy="9" r="2.4"/><path d="M17.3 14.4c2.1.6 3.2 2.4 3.2 5.1"/></svg></span>Contacts</button>
+  <button class="navlink"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8v1.7M3.5 12.5h17"/></svg></span>Deals</button>
+  <button class="navlink"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M3.5 7.5l8.5 5.7 8.5-5.7"/></svg></span>Campaigns</button>
+  <button class="navlink"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20v-6M10 20V6M15 20v-9.5M20 20V3.5"/></svg></span>Reports</button>
+  <button class="navlink"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.7M12 18.5v2.7M2.8 12h2.7M18.5 12h2.7M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9"/></svg></span>Settings</button>
 </aside>
 <main>
   <div class="topbar">
-    <button class="burger" onclick="document.getElementById('side').classList.toggle('open')">☰</button>
+    <button class="burger" onclick="document.getElementById('side').classList.toggle('open')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <div><h1>Good evening, Jameel</h1><div class="date" id="today"></div></div>
     <div class="avatar">JA</div>
   </div>
@@ -118,15 +118,15 @@ const STATS=[
 ];
 function renderStats(){$("stats").innerHTML=STATS.map((s,i)=>`<div class="stat" style="--accent:${s.accent}">
  <div class="k">${s.k}</div><div class="v" data-i="${i}">0</div>
- <div class="d ${s.up?'up':'down'}">${s.up?'▲':'▼'} ${s.d}</div></div>`).join("")}
+ <div class="d ${s.up?'up':'down'}"><svg viewBox="0 0 24 24" style="width:10px;height:10px;vertical-align:0" fill="currentColor"><path d="${s.up?'M12 5l7 12H5z':'M12 19L5 7h14z'}"/></svg> ${s.d}</div></div>`).join("")}
 function animateStats(){document.querySelectorAll(".stat .v").forEach(el=>{
- const s=STATS[+el.dataset.i];const target=s.v;const t0=performance.now();
+ const s=STATS[+el.dataset.i];const target=s.v;const t0=performance.now();let done=false;
  const fmt=cur=>(s.money?"$":"")+(s.suffix?cur.toFixed(1):Math.round(cur).toLocaleString())+(s.suffix||"");
- function step(t){const p=Math.min(1,(t-t0)/900);const e=1-Math.pow(1-p,3);const cur=target*e;
+ function step(t){if(done)return;const p=Math.min(1,(t-t0)/900);const e=1-Math.pow(1-p,3);const cur=target*e;
   el.textContent=fmt(cur);
   if(p<1)requestAnimationFrame(step)}
  requestAnimationFrame(step);
- setTimeout(()=>{el.textContent=fmt(target)},1100)})}
+ setTimeout(()=>{done=true;el.textContent=fmt(target)},1100)})}
 
 function setupCanvas(c){const dpr=window.devicePixelRatio||1;const r=c.getBoundingClientRect();
  c.width=r.width*dpr;c.height=220*dpr;const ctx=c.getContext("2d");ctx.scale(dpr,dpr);return[ctx,r.width,220]}
