@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse — CRM Dashboard</title>
+<style>
+  :root{--bg:#0c0e12;--panel:#13161d;--panel2:#181c25;--line:#242a37;--txt:#e9edf5;--dim:#8c94a6;--lime:#c8f542;--blue:#5aa2ff;--amber:#ffb84d;--red:#ff6b6b;--radius:14px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--txt);font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;display:flex;min-height:100vh}
+  aside{width:220px;background:var(--panel);border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+  .logo{font-weight:900;font-size:21px;letter-spacing:-.6px;padding:0 10px 18px}
+  .logo span{color:var(--lime)}
+  .navlink{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;transition:.15s;border:none;background:none;cursor:pointer;text-align:left;width:100%}
+  .navlink:hover{color:var(--txt);background:var(--panel2)}
+  .navlink.active{background:rgba(200,245,66,.1);color:var(--lime)}
+  .navlink .ico{width:20px;text-align:center}
+  main{flex:1;padding:26px 30px;min-width:0}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+  .topbar h1{font-size:24px;letter-spacing:-.8px}
+  .topbar .date{color:var(--dim);font-size:13px}
+  .avatar{margin-left:auto;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--lime),#6bd0ff);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0c0e12;font-size:14px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
+  .stat::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--lime))}
+  .stat .k{color:var(--dim);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+  .stat .v{font-size:30px;font-weight:800;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+  .stat .d{font-size:12px;font-weight:700}
+  .up{color:var(--lime)}.down{color:var(--red)}
+  .panels{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:22px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .panel h3{font-size:15px;margin-bottom:4px}
+  .panel .sub{color:var(--dim);font-size:12px;margin-bottom:14px}
+  canvas{width:100%;display:block}
+  .legend{display:flex;gap:16px;margin-top:10px;font-size:12px;color:var(--dim)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{color:var(--dim);text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--line)}
+  td{padding:12px;border-bottom:1px solid var(--line)}
+  tr:last-child td{border-bottom:none}
+  .pill{padding:4px 11px;border-radius:999px;font-size:11px;font-weight:700}
+  .won{background:rgba(200,245,66,.13);color:var(--lime)}
+  .talks{background:rgba(90,162,255,.13);color:var(--blue)}
+  .proposal{background:rgba(255,184,77,.13);color:var(--amber)}
+  .lost{background:rgba(255,107,107,.13);color:var(--red)}
+  .company{display:flex;align-items:center;gap:10px}
+  .mark{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+  .activity{display:flex;flex-direction:column;gap:0}
+  .act{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .act:last-child{border:none}
+  .act .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+  .act .t{color:var(--dim);font-size:11px;margin-top:2px}
+  .burger{display:none;background:none;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:16px}
+  @media(max-width:1000px){.panels{grid-template-columns:1fr}}
+  @media(max-width:760px){
+    aside{position:fixed;left:0;z-index:40;transform:translateX(-100%);transition:transform .25s}
+    aside.open{transform:none}
+    .burger{display:block}
+    main{padding:18px}
+  }
+</style>
+</head>
+<body>
+<aside id="side">
+  <div class="logo">PULSE<span>.</span></div>
+  <button class="navlink active"><span class="ico">▦</span>Overview</button>
+  <button class="navlink"><span class="ico">👥</span>Contacts</button>
+  <button class="navlink"><span class="ico">💼</span>Deals</button>
+  <button class="navlink"><span class="ico">✉️</span>Campaigns</button>
+  <button class="navlink"><span class="ico">📊</span>Reports</button>
+  <button class="navlink"><span class="ico">⚙️</span>Settings</button>
+</aside>
+<main>
+  <div class="topbar">
+    <button class="burger" onclick="document.getElementById('side').classList.toggle('open')">☰</button>
+    <div><h1>Good evening, Jameel</h1><div class="date" id="today"></div></div>
+    <div class="avatar">JA</div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Revenue</h3><div class="sub">Last 12 weeks vs previous period</div>
+      <canvas id="line" height="220"></canvas>
+      <div class="legend"><span><i style="background:var(--lime)"></i>This period</span><span><i style="background:#3a4152"></i>Previous</span></div>
+    </div>
+    <div class="panel">
+      <h3>Deals by stage</h3><div class="sub">Active pipeline</div>
+      <canvas id="bars" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Recent deals</h3><div class="sub">Updated in the last 7 days</div>
+      <table>
+        <thead><tr><th>Company</th><th>Value</th><th>Stage</th><th>Owner</th></tr></thead>
+        <tbody id="deals"></tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h3>Activity</h3><div class="sub">Latest across your team</div>
+      <div class="activity" id="activity"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+$("today").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
+const STATS=[
+ {k:"Revenue",v:48230,money:true,d:"+12.4% vs last month",up:true,accent:"var(--lime)"},
+ {k:"Active deals",v:37,d:"+5 this week",up:true,accent:"var(--blue)"},
+ {k:"New contacts",v:128,d:"+18.2% vs last month",up:true,accent:"var(--amber)"},
+ {k:"Churn",v:1.9,suffix:"%",d:"-0.4 pts",up:true,accent:"var(--red)"},
+];
+function renderStats(){$("stats").innerHTML=STATS.map((s,i)=>`<div class="stat" style="--accent:${s.accent}">
+ <div class="k">${s.k}</div><div class="v" data-i="${i}">0</div>
+ <div class="d ${s.up?'up':'down'}">${s.up?'▲':'▼'} ${s.d}</div></div>`).join("")}
+function animateStats(){document.querySelectorAll(".stat .v").forEach(el=>{
+ const s=STATS[+el.dataset.i];const target=s.v;const t0=performance.now();
+ const fmt=cur=>(s.money?"$":"")+(s.suffix?cur.toFixed(1):Math.round(cur).toLocaleString())+(s.suffix||"");
+ function step(t){const p=Math.min(1,(t-t0)/900);const e=1-Math.pow(1-p,3);const cur=target*e;
+  el.textContent=fmt(cur);
+  if(p<1)requestAnimationFrame(step)}
+ requestAnimationFrame(step);
+ setTimeout(()=>{el.textContent=fmt(target)},1100)})}
+
+function setupCanvas(c){const dpr=window.devicePixelRatio||1;const r=c.getBoundingClientRect();
+ c.width=r.width*dpr;c.height=220*dpr;const ctx=c.getContext("2d");ctx.scale(dpr,dpr);return[ctx,r.width,220]}
+
+const CUR=[12,15,14,19,22,21,26,29,27,33,36,41],PREV=[10,11,13,12,15,17,16,18,20,19,22,24];
+function drawLine(){
+ const[ctx,W,H]=setupCanvas($("line"));const pad={l:34,r:10,t:14,b:24};
+ const max=Math.max(...CUR)*1.15;const x=i=>pad.l+(W-pad.l-pad.r)*i/(CUR.length-1);const y=v=>H-pad.b-(H-pad.t-pad.b)*v/max;
+ ctx.strokeStyle="#242a37";ctx.fillStyle="#8c94a6";ctx.font="10px Inter,system-ui";ctx.textAlign="right";
+ for(let g=0;g<=4;g++){const v=max*g/4;ctx.beginPath();ctx.moveTo(pad.l,y(v));ctx.lineTo(W-pad.r,y(v));ctx.stroke();
+  ctx.fillText("$"+Math.round(v)+"k",pad.l-6,y(v)+3)}
+ function series(data,color,fill){
+  ctx.beginPath();data.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));
+  if(fill){const g=ctx.createLinearGradient(0,pad.t,0,H-pad.b);g.addColorStop(0,"rgba(200,245,66,.25)");g.addColorStop(1,"rgba(200,245,66,0)");
+   ctx.save();ctx.lineTo(x(data.length-1),H-pad.b);ctx.lineTo(x(0),H-pad.b);ctx.closePath();ctx.fillStyle=g;ctx.fill();ctx.restore();
+   ctx.beginPath();data.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)))}
+  ctx.strokeStyle=color;ctx.lineWidth=2.2;ctx.lineJoin="round";ctx.stroke()}
+ series(PREV,"#3a4152",false);series(CUR,"#c8f542",true);
+ ctx.fillStyle="#c8f542";CUR.forEach((v,i)=>{if(i%3===2||i===CUR.length-1){ctx.beginPath();ctx.arc(x(i),y(v),3,0,7);ctx.fill()}});
+ ctx.fillStyle="#8c94a6";ctx.textAlign="center";["W1","W3","W5","W7","W9","W11"].forEach((l,j)=>ctx.fillText(l,x(j*2),H-8));
+}
+const STAGES=[["Lead",14,"#5aa2ff"],["Contacted",11,"#8c94a6"],["Proposal",7,"#ffb84d"],["Won",5,"#c8f542"]];
+function drawBars(){
+ const[ctx,W,H]=setupCanvas($("bars"));const pad={l:10,r:10,t:16,b:30};
+ const max=Math.max(...STAGES.map(s=>s[1]))*1.2;const bw=(W-pad.l-pad.r)/STAGES.length;
+ STAGES.forEach((s,i)=>{const bx=pad.l+bw*i+bw*.18;const bwid=bw*.64;const bh=(H-pad.t-pad.b)*s[1]/max;const by=H-pad.b-bh;
+  ctx.fillStyle="#1b1f29";ctx.beginPath();ctx.roundRect(bx,pad.t,bwid,H-pad.t-pad.b,6);ctx.fill();
+  ctx.fillStyle=s[2];ctx.beginPath();ctx.roundRect(bx,by,bwid,bh,6);ctx.fill();
+  ctx.fillStyle="#e9edf5";ctx.font="bold 13px Inter,system-ui";ctx.textAlign="center";ctx.fillText(s[1],bx+bwid/2,by-7);
+  ctx.fillStyle="#8c94a6";ctx.font="10.5px Inter,system-ui";ctx.fillText(s[0],bx+bwid/2,H-10)});
+}
+const DEALS=[
+ ["Vertex Labs","$12,400","won","JA","#c8f542"],["Nordwind Co","$8,900","proposal","JA","#5aa2ff"],
+ ["Atlas Media","$21,000","talks","SM","#ffb84d"],["Bluefin Retail","$5,200","lost","JA","#ff6b6b"],
+ ["Kite Systems","$16,750","proposal","SM","#6bd0ff"],["Oro Foods","$9,300","won","JA","#b18cff"],
+];
+const LBL={won:"Won",talks:"In talks",proposal:"Proposal",lost:"Lost"};
+$("deals").innerHTML=DEALS.map(d=>`<tr><td><div class="company"><div class="mark" style="background:${d[4]}22;color:${d[4]}">${d[0].split(" ").map(w=>w[0]).join("")}</div>${d[0]}</div></td>
+ <td style="font-variant-numeric:tabular-nums">${d[1]}</td><td><span class="pill ${d[2]}">${LBL[d[2]]}</span></td><td>${d[3]}</td></tr>`).join("");
+const ACTS=[
+ ["#c8f542","Vertex Labs signed the annual contract.","12 min ago"],
+ ["#5aa2ff","New lead from the website form: Hala Trading.","48 min ago"],
+ ["#ffb84d","Proposal sent to Nordwind Co ($8,900).","2 h ago"],
+ ["#6bd0ff","Sara added 14 contacts from the expo list.","5 h ago"],
+ ["#ff6b6b","Bluefin Retail marked the deal as lost.","Yesterday"],
+];
+$("activity").innerHTML=ACTS.map(a=>`<div class="act"><div class="dot" style="background:${a[0]}"></div><div>${a[1]}<div class="t">${a[2]}</div></div></div>`).join("");
+function drawAll(){drawLine();drawBars()}
+renderStats();animateStats();drawAll();
+let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(drawAll,150)});
+</script>
+</body>
+</html>
